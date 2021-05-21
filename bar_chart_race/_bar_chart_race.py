@@ -499,7 +499,7 @@ class _BarChartRace(CommonChart):
         cols = self.df_values.columns[top_filt]
         colors = self.bar_colors[top_filt]
         bar_image_names = None
-        if self.img_label_names:
+        if self.img_label_names is not None:
             bar_image_names = self.img_label_names[top_filt]
         return bar_location, bar_length, cols, colors, bar_image_names
 
