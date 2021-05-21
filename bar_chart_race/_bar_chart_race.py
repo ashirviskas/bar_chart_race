@@ -96,7 +96,7 @@ class _BarChartRace(CommonChart):
         self.fig = self.get_fig(fig)
 
         self.img_label_folder = img_label_folder  # root folder where image labels are stored
-        self.img_label_names = img_label_names
+        self.img_label_names = pd.DataFrame(img_label_names)
         self.tick_label_mode = tick_label_mode
         self.tick_image_mode = tick_image_mode
         self.img_label_artist = []  # stores image artists
@@ -382,7 +382,7 @@ class _BarChartRace(CommonChart):
     def get_max_plotted_value(self):
         plotted_values = []
         for i in range(len(self.df_values)):
-            _, bar_length, _, _ = self.get_bar_info(i)
+            _, bar_length, _, _, _ = self.get_bar_info(i)
             plotted_values.append(max(bar_length))
         return max(plotted_values)
 
@@ -428,7 +428,7 @@ class _BarChartRace(CommonChart):
         fig = plt.Figure(**self.fig_kwargs, tight_layout=False)
         ax = fig.add_subplot()
         plot_func = ax.barh if self.orientation == 'h' else ax.bar
-        bar_location, bar_length, cols, _ = self.get_bar_info(-1)
+        bar_location, bar_length, cols, _, _ = self.get_bar_info(-1)
         plot_func(bar_location, bar_length, tick_label=cols)
 
         self.prepare_axes(ax)
@@ -498,7 +498,10 @@ class _BarChartRace(CommonChart):
         bar_length = self.df_values.iloc[i].values[top_filt]
         cols = self.df_values.columns[top_filt]
         colors = self.bar_colors[top_filt]
-        return bar_location, bar_length, cols, colors
+        bar_image_names = None
+        if self.img_label_names:
+            bar_image_names = self.img_label_names[top_filt]
+        return bar_location, bar_length, cols, colors, bar_image_names
 
     def set_major_formatter(self, ax):
         if self.tick_template:
@@ -506,7 +509,7 @@ class _BarChartRace(CommonChart):
             axis.set_major_formatter(self.tick_template)
 
     def plot_bars(self, ax, i):
-        bar_location, bar_length, cols, colors = self.get_bar_info(i)
+        bar_location, bar_length, cols, colors, bar_image_names = self.get_bar_info(i)
         if self.orientation == 'h':
             ax.barh(bar_location, bar_length, tick_label=cols,
                     color=colors, **self.bar_kwargs)
@@ -529,14 +532,10 @@ class _BarChartRace(CommonChart):
                 ax.set_ylim(ax.get_ylim()[0], new_ymax)
 
         if self.img_label_folder:  # here I am handling the addition of images as the bar tick labels
-            zipped = zip(bar_location, bar_length, cols)
-            for j, (bar_loc, bar_len, col_name) in enumerate(zipped):
+            zipped = zip(bar_location, bar_length, cols, bar_image_names)
+            for bar_loc, bar_len, col_name, bar_image_name in zipped:
                 # self.offset_image(bar_loc,bar_len,col_name,ax)
-                img_label_name = None
-                if self.img_label_names:
-                    img_label_name = self.img_label_names[j]
-
-                self._add_tick_label_offset_image(bar_loc, bar_len, col_name, ax, img_label_name)
+                self._add_tick_label_offset_image(bar_loc, bar_len, col_name, ax, bar_image_name)
 
         self.set_major_formatter(ax)
         self.add_period_label(ax, i)
