@@ -21,6 +21,7 @@ def get_image_label(root_folder, name):
     path = os.path.join(root_folder, name)
     # im = plt.imread(path)
     img = Image.open(path)
+    img = img.convert('RGBA')
     img.thumbnail((200, 200), Image.ANTIALIAS)
     return img
 
