@@ -92,11 +92,11 @@ class _BarChartRace(CommonChart):
         self.bar_colors = self.get_bar_colors(colors)
         self.str_index = self.df_values.index.astype('str')
         self.fig_kwargs = self.get_fig_kwargs(fig_kwargs)
+        self.img_label_names = pd.DataFrame(img_label_names)
         self.subplots_adjust = self.get_subplots_adjust()
         self.fig = self.get_fig(fig)
 
         self.img_label_folder = img_label_folder  # root folder where image labels are stored
-        self.img_label_names = pd.DataFrame(img_label_names)
         self.tick_label_mode = tick_label_mode
         self.tick_image_mode = tick_image_mode
         self.img_label_artist = []  # stores image artists
