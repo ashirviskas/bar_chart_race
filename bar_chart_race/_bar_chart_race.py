@@ -532,10 +532,10 @@ class _BarChartRace(CommonChart):
                 ax.set_ylim(ax.get_ylim()[0], new_ymax)
 
         if self.img_label_folder:  # here I am handling the addition of images as the bar tick labels
-            zipped = zip(bar_location, bar_length, cols, bar_image_names)
-            for bar_loc, bar_len, col_name, bar_image_name in zipped:
+            zipped = zip(bar_location, bar_length, cols)
+            for bar_loc, bar_len, col_name in zipped:
                 # self.offset_image(bar_loc,bar_len,col_name,ax)
-                self._add_tick_label_offset_image(bar_loc, bar_len, col_name, ax, bar_image_name)
+                self._add_tick_label_offset_image(bar_loc, bar_len, col_name, ax, bar_image_names)
 
         self.set_major_formatter(ax)
         self.add_period_label(ax, i)
