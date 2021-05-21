@@ -92,7 +92,7 @@ class _BarChartRace(CommonChart):
         self.bar_colors = self.get_bar_colors(colors)
         self.str_index = self.df_values.index.astype('str')
         self.fig_kwargs = self.get_fig_kwargs(fig_kwargs)
-        self.img_label_names = pd.DataFrame(img_label_names)
+        self.img_label_names = np.array(img_label_names)
         self.subplots_adjust = self.get_subplots_adjust()
         self.fig = self.get_fig(fig)
 
