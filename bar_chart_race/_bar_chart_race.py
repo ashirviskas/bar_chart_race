@@ -530,11 +530,11 @@ class _BarChartRace(CommonChart):
 
         if self.img_label_folder:  # here I am handling the addition of images as the bar tick labels
             zipped = zip(bar_location, bar_length, cols)
-            for i, (bar_loc, bar_len, col_name) in enumerate(zipped):
+            for j, (bar_loc, bar_len, col_name) in enumerate(zipped):
                 # self.offset_image(bar_loc,bar_len,col_name,ax)
                 img_label_name = None
                 if self.img_label_names:
-                    img_label_name = self.img_label_names[i]
+                    img_label_name = self.img_label_names[j]
 
                 self._add_tick_label_offset_image(bar_loc, bar_len, col_name, ax, img_label_name)
 
