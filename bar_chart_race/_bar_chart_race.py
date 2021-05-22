@@ -16,13 +16,15 @@ from ._common_chart import CommonChart
 from ._utils import prepare_wide_data
 
 
-def get_image_label(root_folder, name):
+def get_image_label(root_folder, name, img_size=None):
+    if img_size is None:
+        img_size = (200, 200)
     # path = "data/flags/Flags/flags/flags/24/{}.png".format(name.title())
     path = os.path.join(root_folder, name)
     # im = plt.imread(path)
     img = Image.open(path)
     img = img.convert('RGBA')
-    img.thumbnail((200, 200), Image.ANTIALIAS)
+    img.thumbnail(img_size, Image.ANTIALIAS)
     return img
 
 
@@ -54,7 +56,7 @@ class _BarChartRace(CommonChart):
                  colors, title, bar_size, bar_textposition, bar_texttemplate, bar_label_font,
                  tick_label_font, tick_template, shared_fontdict, scale, fig, writer,
                  bar_kwargs, fig_kwargs, filter_column_colors,
-                 img_label_folder, img_label_names, tick_label_mode, tick_image_mode):
+                 img_label_folder, img_label_names, img_label_size, tick_label_mode, tick_image_mode):
         self.filename = filename
         self.extension = self.get_extension()
         self.orientation = orientation
@@ -97,6 +99,7 @@ class _BarChartRace(CommonChart):
         self.fig = self.get_fig(fig)
 
         self.img_label_folder = img_label_folder  # root folder where image labels are stored
+        self.img_label_size = img_label_size  # root folder where image labels are stored
         self.tick_label_mode = tick_label_mode
         self.tick_image_mode = tick_image_mode
         self.img_label_artist = []  # stores image artists
@@ -201,7 +204,7 @@ class _BarChartRace(CommonChart):
         """
         # load image as an OffsetImage object
         img_name = get_image_name(name)
-        img = get_image_label(self.img_label_folder, img_name)
+        img = get_image_label(self.img_label_folder, img_name, img_size=self.img_label_size)
         im = OffsetImage(img, zoom=.8)  # change zoom value based on icon image's size
         im.image.axes = ax
 
@@ -248,7 +251,7 @@ class _BarChartRace(CommonChart):
         if not image_name:
             image_name = name
         img_name = get_image_name(image_name)
-        img = get_image_label(self.img_label_folder, img_name)
+        img = get_image_label(self.img_label_folder, img_name, img_size=self.img_label_size)
         im = OffsetImage(img, zoom=.25)  # change zoom value based on icon image's size
         im.image.axes = ax
 
@@ -703,7 +706,7 @@ def bar_chart_race(df, filename=None, orientation='h', sort='desc', n_bars=None,
                    bar_label_font=None, tick_label_font=None, tick_template='{x:,.0f}',
                    shared_fontdict=None, scale='linear', fig=None, writer=None, bar_kwargs=None,
                    fig_kwargs=None, filter_column_colors=False,
-                   img_label_folder=None, img_label_names=None, tick_label_mode='image', tick_image_mode='trailing'):
+                   img_label_folder=None, img_label_names=None, img_label_size=(200, 200), tick_label_mode='image', tick_image_mode='trailing'):
     '''
     Create an animated bar chart race using matplotlib. Data must be in 
     'wide' format where each row represents a single time period and each 
@@ -1008,7 +1011,7 @@ def bar_chart_race(df, filename=None, orientation='h', sort='desc', n_bars=None,
         the filenames should match name of the corresponding column in the dataframe.
 
     img_label_names : `None` or list, default `None`
-        Overridden image label names
+        Overrides image names to use in `img_label_folder` (will add .png to file end)
 
     tick_label_mode : str, default `image`
         Dictates what kind of tick label will be used for the bars. Depending on the
@@ -1086,5 +1089,5 @@ def bar_chart_race(df, filename=None, orientation='h', sort='desc', n_bars=None,
                         colors, title, bar_size, bar_textposition, bar_texttemplate,
                         bar_label_font, tick_label_font, tick_template, shared_fontdict, scale,
                         fig, writer, bar_kwargs, fig_kwargs, filter_column_colors,
-                        img_label_folder, img_label_names, tick_label_mode, tick_image_mode)
+                        img_label_folder, img_label_names, img_label_size, tick_label_mode, tick_image_mode)
     return bcr.make_animation()
