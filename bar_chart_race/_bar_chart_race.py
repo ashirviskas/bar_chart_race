@@ -660,29 +660,29 @@ class _BarChartRace(CommonChart):
         frames = frame_generator(len(self.df_values))
         anim = FuncAnimation(self.fig, self.anim_func, frames, init_func, interval=interval)
 
-        try:
+        # try:
+        fc = self.fig.get_facecolor()
+        if fc == (1, 1, 1, 0):
+            fc = 'white'
+        savefig_kwargs = {'facecolor': fc}
+        if self.html:
+            ret_val = anim.to_html5_video(savefig_kwargs=savefig_kwargs)
+            try:
+                from IPython.display import HTML
+                ret_val = HTML(ret_val)
+            except ImportError:
+                pass
+        else:
             fc = self.fig.get_facecolor()
             if fc == (1, 1, 1, 0):
                 fc = 'white'
-            savefig_kwargs = {'facecolor': fc}
-            if self.html:
-                ret_val = anim.to_html5_video(savefig_kwargs=savefig_kwargs)
-                try:
-                    from IPython.display import HTML
-                    ret_val = HTML(ret_val)
-                except ImportError:
-                    pass
-            else:
-                fc = self.fig.get_facecolor()
-                if fc == (1, 1, 1, 0):
-                    fc = 'white'
-                ret_val = anim.save(self.filename, fps=self.fps, writer=self.writer,
-                                    savefig_kwargs=savefig_kwargs)
-        except Exception as e:
-            message = str(e)
-            raise Exception(message)
-        finally:
-            plt.rcParams = self.orig_rcParams
+            ret_val = anim.save(self.filename, fps=self.fps, writer=self.writer,
+                                savefig_kwargs=savefig_kwargs)
+        # except Exception as e:
+        #     message = str(e)
+        #     raise Exception(message)
+        # finally:
+        plt.rcParams = self.orig_rcParams
 
         return ret_val
 
