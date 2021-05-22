@@ -532,10 +532,17 @@ class _BarChartRace(CommonChart):
                 ax.set_ylim(ax.get_ylim()[0], new_ymax)
 
         if self.img_label_folder:  # here I am handling the addition of images as the bar tick labels
-            zipped = zip(bar_location, bar_length, cols)
-            for bar_loc, bar_len, col_name in zipped:
-                # self.offset_image(bar_loc,bar_len,col_name,ax)
-                self._add_tick_label_offset_image(bar_loc, bar_len, col_name, ax, bar_image_names)
+            if bar_image_names is not None:
+                zipped = zip(bar_location, bar_length, cols, bar_image_names)
+                for bar_loc, bar_len, col_name, bar_image_name in zipped:
+                    # self.offset_image(bar_loc,bar_len,col_name,ax)
+                    self._add_tick_label_offset_image(bar_loc, bar_len, col_name, ax, bar_image_name)
+            else:
+                zipped = zip(bar_location, bar_length, cols)
+                for bar_loc, bar_len, col_name in zipped:
+                    # self.offset_image(bar_loc,bar_len,col_name,ax)
+                    self._add_tick_label_offset_image(bar_loc, bar_len, col_name, ax)
+
 
         self.set_major_formatter(ax)
         self.add_period_label(ax, i)
@@ -660,29 +667,29 @@ class _BarChartRace(CommonChart):
         frames = frame_generator(len(self.df_values))
         anim = FuncAnimation(self.fig, self.anim_func, frames, init_func, interval=interval)
 
-        # try:
-        fc = self.fig.get_facecolor()
-        if fc == (1, 1, 1, 0):
-            fc = 'white'
-        savefig_kwargs = {'facecolor': fc}
-        if self.html:
-            ret_val = anim.to_html5_video(savefig_kwargs=savefig_kwargs)
-            try:
-                from IPython.display import HTML
-                ret_val = HTML(ret_val)
-            except ImportError:
-                pass
-        else:
+        try:
             fc = self.fig.get_facecolor()
             if fc == (1, 1, 1, 0):
                 fc = 'white'
-            ret_val = anim.save(self.filename, fps=self.fps, writer=self.writer,
-                                savefig_kwargs=savefig_kwargs)
-        # except Exception as e:
-        #     message = str(e)
-        #     raise Exception(message)
-        # finally:
-        plt.rcParams = self.orig_rcParams
+            savefig_kwargs = {'facecolor': fc}
+            if self.html:
+                ret_val = anim.to_html5_video(savefig_kwargs=savefig_kwargs)
+                try:
+                    from IPython.display import HTML
+                    ret_val = HTML(ret_val)
+                except ImportError:
+                    pass
+            else:
+                fc = self.fig.get_facecolor()
+                if fc == (1, 1, 1, 0):
+                    fc = 'white'
+                ret_val = anim.save(self.filename, fps=self.fps, writer=self.writer,
+                                    savefig_kwargs=savefig_kwargs)
+        except Exception as e:
+            message = str(e)
+            raise Exception(message)
+        finally:
+            plt.rcParams = self.orig_rcParams
 
         return ret_val
 
